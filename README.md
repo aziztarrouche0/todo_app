@@ -18,3 +18,4 @@ Saves tasks automatically (localStorage)
 
 Clean and responsive UI
 
+# **I built this project to practice my HTML, CSS, and JavaScript skills. I’d be happy to hear any feedback or suggestions!**
