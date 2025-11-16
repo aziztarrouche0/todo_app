@@ -1,0 +1,87 @@
+const todoform = document.querySelector('form'); 
+const todoinput = document.getElementById('todoinput');
+const todolist = document.getElementById('todolist');
+
+let alltodos = gettodos().map(todo => 
+  typeof todo === 'string' ? { text: todo, completed: false } : todo
+);
+
+updatetodo();
+
+todoform.addEventListener('submit', function(e){
+
+e.preventDefault(); 
+addtodo();
+})
+
+
+function addtodo(){
+    const todotext = todoinput.value.trim();
+       if(todotext.length > 0){
+        
+         alltodos.push({ text: todotext, completed: false });
+         updatetodo();
+         savetodo();
+            todoinput.value= ""; 
+       }
+
+}
+function updatetodo (){
+todolist.innerHTML="";
+alltodos.forEach((todo,todoindex)=>{
+let    todoitem = createtodo(todo,todoindex);
+    todolist.appendChild(todoitem);
+});
+
+}
+
+function createtodo(todo, todoindex) {
+  const todoli = document.createElement("li"); 
+  todoli.className = "todo";
+  const checkId = "todo-" + todoindex;
+  const isChecked = todo.completed ? "checked" : "";
+
+  todoli.innerHTML = `
+    <input type="checkbox" id="${checkId}" ${isChecked}>
+    <label for="${checkId}" class="customcheck">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
+        <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+      </svg>
+    </label>
+    <label for="${checkId}" class="todotext">${todo.text}</label>
+    <button class="deletebtn">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3-fill" viewBox="0 0 16 16">
+        <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06m6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528M8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5"/>
+      </svg>
+    </button>
+  `;
+
+  const deletebtn = todoli.querySelector(".deletebtn"); 
+  deletebtn.addEventListener("click", () => {
+    deletetodo(todoindex);
+  });
+
+  const checkbox = todoli.querySelector("input"); 
+  checkbox.addEventListener("change", () => {
+    alltodos[todoindex].completed = checkbox.checked;
+    savetodo();
+  });
+
+  return todoli;
+}
+ function deletetodo(todoindex){
+    alltodos = alltodos.filter((_,i)=> i !== todoindex);
+    savetodo();
+    updatetodo();
+ }
+
+function savetodo(){
+    const todojson = JSON.stringify(alltodos);
+localStorage.setItem("todos", todojson);
+
+
+}
+function gettodos(){
+    const todos = localStorage.getItem("todos") || "[]"; 
+    return JSON.parse(todos)
+}
